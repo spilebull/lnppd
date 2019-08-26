@@ -6,8 +6,10 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-Django = "==2.2.3"
 pipenv = "*"
+django = ">=2.2.4"
+gunicorn = "==19.9.0"
+redis = "==3.2.1"
 
 [requires]
 python_version = "3.7"

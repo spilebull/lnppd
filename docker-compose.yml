@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  web:
+    container_name: django-01
+    build: .
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=password
+      - DATABASE_ENGINE=django.db.backends.postgresql_psycopg2
+      - DATABASE_DB=django_db
+      - DATABASE_USER=django_db_user  
+      - DATABASE_PASSWORD=django_db_pass
+      - DATABASE_HOST=postgres  
+      - DATABASE_PORT=5432  
+    volumes:
+      - "./app/src:/django/app/src"
+    expose:
+      - "8000"
+    depends_on:
+      - db
+    restart: always
+      
+  server:
+    container_name: nginx-01
+    image: nginx:latest
+    volumes:
+      - "./app/src:/django/app/src"
+      - "./settings/nginx:/etc/nginx/conf.d"
+    ports:
+      - 8000:8000
+    depends_on:
+      - web
+    restart: always
+
+  db:
+    container_name: postgres-01
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_db_user
+      - POSTGRES_PASSWORD=django_db_pass
+    links:
+      - redis
+    restart: always
+
+  redis:
+    container_name: redis-01
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
