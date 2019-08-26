@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  django:
+    restart: always
+    build: ./app
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=password
+      - DATABASE_ENGINE=django.db.backends.postgresql  
+      - DATABASE_DB=django_db  
+      - DATABASE_USER=django_db_user  
+      - DATABASE_PASSWORD=django_db_pass
+      - DATABASE_HOST=postgres  
+      - DATABASE_PORT=5432  
+    command: python manage.py flush --no-input && python manage.py migrate  && python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - "./app:/code"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      
+#  nginx:
+#    restart: always
+#    image: nginx:latest
+#    volumes:
+#      - "./nginx/:/etc/nginx"
+#      - "./app/src/static:/code/static"
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - django
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_db_user
+      - POSTGRES_PASSWORD=django_db_pass  
+    volumes:
+      - database:/var/lib/postgresql/data
+
+volumes:
+  database:
