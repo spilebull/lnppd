@@ -6,8 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-Django = "==2.2.3"
 pipenv = "*"
+django = "==2.2.3"
+gunicorn = "==19.9.0"
 
 [requires]
 python_version = "3.7"
