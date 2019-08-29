@@ -21,23 +21,48 @@ $ docker-compose up -d
 ## ディレクトリ構造
 
 ```
-$ tree -L 1 --dirsfirst
-.
-.
+├── Dockerfile
+├── Pipfile
+├── README.md
 ├── app
-│   ├── Dockerfile
-│   ├── Pipfile
-│   ├── manage.py
 │   └── src
-│       ├── __init__.py
-│       ├── settings.py
-│       ├── urls.py
-│       └── wsgi.py
+│       ├── config
+│       │   ├── __init__.py
+│       │   ├── settings.py
+│       │   ├── urls.py
+│       │   └── wsgi.py
+│       ├── main
+│       │   ├── __init__.py
+│       │   ├── python
+│       │   │   ├── __init__.py
+│       │   │   ├── admin.py
+│       │   │   ├── apps.py
+│       │   │   ├── migrations
+│       │   │   │   └── __init__.py
+│       │   │   ├── models
+│       │   │   │   └── __init__.py
+│       │   │   └── views
+│       │   │       ├── __init__.py
+│       │   │       └── main.py
+│       │   └── static
+│       │       ├── css
+│       │       │   └── dummy.css
+│       │       ├── img
+│       │       │   └── dummy.png
+│       │       └── js
+│       │           └── dummy.js
+│       ├── manage.py
+│       ├── templates
+│       │   └── dummy.html
+│       └── test
+│           ├── __init__.py
+│           └── python
+│               ├── __init__.py
+│               └── tests.py
 ├── docker-compose.yml
-├── nginx
-│   ├── mime.types
-│   └── nginx.conf
-└── README.md
+└── settings
+    └── nginx
+        └── django.conf
 ```
 
 ## 設定方法
@@ -51,10 +76,10 @@ $ tree -L 1 --dirsfirst
 
 ```bash
 # システムにDjangoがインストールされていることを確認
-$ django-admin startproject <name_project>
+$ docker exec {コンテナ名} django-admin startproject {プロジェクト名}
 ```
 
-`config/environment/development.env` ファイルを編集し、プロジェクト名を追加
+`config/settings.py` ファイルを編集し、プロジェクト名を追加
 `DJANGO_PROJECT_NAME` でプロジェクトを作成するか、そのままにしてデフォルトで開始。
 
 データベース認証情報と静的な設定で `settings.py` ファイルを編集
@@ -71,23 +96,23 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = '/srv/static-files'
+STATIC_ROOT = '/app/src/static'
 ```
 
 ### 環境変数
-ファイル `config/environment/development.env` は環境変数の設定に使用。
+ファイル `config/settings.py` は環境変数の設定に使用。
 これらがこのプロジェクトが使用するデフォルト値です。
 このファイルをバージョン外にする必要があることに注意してください。
 
-## Fire it up
-Start the container by issuing one of the following commands:
+## 起動方法
+次のコマンドを実行するとコンテナが起動します:
 ```bash
-$ docker-compose up             # run in foreground
-$ docker-compose up -d          # run in background
+$ docker-compose up             # フォアグラウンド起動
+$ docker-compose up -d          # バックグラウンド起動
 ```
 
-## Other commands
-Build images:
+## その他
+ビルドイメージ:
 ```bash
 $ docker-compose build
 $ docker-compose build --no-cache       # build without cache
