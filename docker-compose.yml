@@ -28,7 +28,7 @@ services:
       - "./app/src:/django/app/src"
       - "./settings/nginx:/etc/nginx/conf.d"
     ports:
-      - 8000:8000
+      - 80:8000
     depends_on:
       - web
     restart: always

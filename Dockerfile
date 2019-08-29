@@ -41,7 +41,7 @@ RUN pip install pipenv
 # Django 構築
 # --------------------------------------------------
 COPY Pipfile $PROJECT_PATH/
-RUN pipenv install --skip-lock --system --dev
+RUN pipenv install --skip-lock --system --dev # --dev 開発環境用パッケージもインストール
 
 # ホスト [app/src] を [/app/src] へコピー
 COPY ./app/src $SRC_PATH

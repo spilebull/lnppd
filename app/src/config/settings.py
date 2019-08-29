@@ -2,9 +2,13 @@
 # Django 設定
 # ==================================================
 import os
+import sys
 
 # プロジェクトディレクトリ設定
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# アプリケーションディレクトリ設定
+APP_DIR = sys.path.append(os.path.join(BASE_DIR, "main"))
 
 # セキュリティキー設定
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -42,7 +46,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,5 +113,7 @@ USE_TZ = True
 # --------------------------------------------------
 # 静的ファイル（CSS, JavaScript, Images）
 # --------------------------------------------------
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
