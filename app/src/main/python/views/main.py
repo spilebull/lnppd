@@ -1,8 +1,5 @@
-from django.views.generic import TemplateView
+from django.http import HttpResponse
 
-class ShowHelloWorld(TemplateView):
-    template_name='dummy.html'
 
-    def get(self, *args, **kwargs):
-        show_hello_world.apply()
-        return super().get(*args, **kwargs)
+def index(request):
+    return HttpResponse("初めの言葉")
