@@ -21,48 +21,38 @@ $ docker-compose up -d
 ## ディレクトリ構造
 
 ```
-├── Dockerfile
-├── Pipfile
-├── README.md
-├── app
-│   └── src
-│       ├── config
-│       │   ├── __init__.py
-│       │   ├── settings.py
-│       │   ├── urls.py
-│       │   └── wsgi.py
-│       ├── main
-│       │   ├── __init__.py
-│       │   ├── python
-│       │   │   ├── __init__.py
-│       │   │   ├── admin.py
-│       │   │   ├── apps.py
-│       │   │   ├── migrations
-│       │   │   │   └── __init__.py
-│       │   │   ├── models
-│       │   │   │   └── __init__.py
-│       │   │   └── views
-│       │   │       ├── __init__.py
-│       │   │       └── main.py
-│       │   └── static
-│       │       ├── css
-│       │       │   └── dummy.css
-│       │       ├── img
-│       │       │   └── dummy.png
-│       │       └── js
-│       │           └── dummy.js
-│       ├── manage.py
-│       ├── templates
-│       │   └── dummy.html
-│       └── test
-│           ├── __init__.py
-│           └── python
-│               ├── __init__.py
-│               └── tests.py
-├── docker-compose.yml
-└── settings
-    └── nginx
-        └── django.conf
+├── lnppd
+│   ├── Dockerfile
+│   ├── Pipfile
+│   ├── README.md
+│   ├── app
+│   │   └── src
+│   │       ├── config
+│   │       │   ├── __init__.py
+│   │       │   ├── settings.py
+│   │       │   ├── urls.py
+│   │       │   └── wsgi.py
+│   │       ├── main
+│   │       │   ├── __init__.py
+│   │       │   └── python
+│   │       │       ├── __init__.py
+│   │       │       ├── admin.py
+│   │       │       ├── apps.py
+│   │       │       ├── migrations
+│   │       │       │   └── __init__.py
+│   │       │       ├── models
+│   │       │       │   └── __init__.py
+│   │       │       ├── urls.py
+│   │       │       └── views
+│   │       │           ├── __init__.py
+│   │       │           └── main.py
+│   │       ├── manage.py
+│   │       └── templates
+│   │           └── dummy.html
+│   ├── docker-compose.yml
+│   └── settings
+│       └── nginx
+│           └── django.conf
 ```
 
 ## 設定方法
@@ -115,94 +105,65 @@ $ docker-compose up -d          # バックグラウンド起動
 ビルドイメージ:
 ```bash
 $ docker-compose build
-$ docker-compose build --no-cache       # build without cache
+$ docker-compose build --no-cache   # キャッシュなしでビルド
 ```
 
-See processes:
+動作確認:
 ```bash
-$ docker-compose ps                 # docker-compose processes
-$ docker ps -a                      # docker processes (sometimes needed)
-$ docker stats [container name]     # see live docker container metrics
+$ docker-compose ps                 # 動作確認
+$ docker ps -a                      # 動作確認（全部）
+$ docker stats [container name]     # 動作中のDockerコンテナ状態確認
 ```
 
-See logs:
+ログ:
 ```bash
-# See logs of all services
-$ docker-compose logs
-
-# See logs of a specific service
-$ docker-compose logs -f [service_name]
+$ docker-compose logs                   # 全サービスログ確認
+$ docker-compose logs -f [service_name] # 特定のサービスログ確認
 ```
 
-Run commands in container:
+コンテナ上でコマンド実行:
 ```bash
-# Name of service is the name you gave it in the docker-compose.yml
 $ docker-compose run [service_name] /bin/bash
-$ docker-compose run [service_name] python /srv/starter/manage.py shell
+$ docker-compose run [service_name] python manage.py shell
 $ docker-compose run [service_name] env
 ```
 
-Remove all docker containers:
+全コンテナ削除:
 ```bash
 docker rm $(docker ps -a -q)
 ```
 
-Remove all docker images:
+全コンテナイメージ削除:
 ```bash
 docker rmi $(docker images -q)
 ```
 
-### Some commands for managing the webapp
-To initiate a command in an existing running container use the `docker exec`
-command.
+### コマンド実行処理
+実行中の既存のコンテナでコマンドを開始するには、 `docker exec` コマンドを実行する。
 
 ```bash
-# Find container_name by using docker-compose ps
+# docker-compose ps を 使用して container_name を見つける
 
-# restart uwsgi in a running container.
+# 実行中のコンテナでuwsgiを再起動
 $ docker exec [container_name] touch /etc/uwsgi/reload-uwsgi.ini
 
-# create migration file for an app
+# アプリ移行ファイルを作成
 $ docker exec -it [container-name] \
-    python /srv/[project-name]/manage.py makemigrations scheduler
+    python [project-name]/manage.py makemigrations scheduler
 
-# migrate
+# マイグレーション
 $ docker exec -it [container-name] \
-    python3 /srv/[project-name]/manage.py migrate
+    python3 [project-name]/manage.py migrate
 
-# get sql contents of a migration
+# 移行のSQLコンテンツを取得
 $ docker exec -it [container-name] \
-    python3 /srv/[project-name]/manage.py sqlmigrate [appname] 0001
+    python3 [project-name]/manage.py sqlmigrate [appname] 0001
 
-# get to interactive console
+# 対話型コンソールにアクセス
 $ docker exec -it [container-name] \
-    python3 /srv/[project-name]/manage.py shell
+    python3 [project-name]/manage.py shell
 
-# testing
+# テスト実行
 docker exec [container-name] \
-    python3 /srv/[project-name]/manage.py test
-```
-
-## Troubleshooting
-Q: I get the following error message when using the docker command:
-
-```
-FATA[0000] Get http:///var/run/docker.sock/v1.16/containers/json: dial unix /var/run/docker.sock: permission denied. Are you trying to connect to a TLS-enabled daemon without TLS? 
-
-```
-
-A: Add yourself (user) to the docker group, remember to re-log after!
-
-```bash
-$ usermod -a -G docker <your_username>
-$ service docker restart
-```
-
-Q: Changes in my code are not being updated despite using volumes.
-
-A: Remember to restart uWSGI for the changes to take effect.
-
-```bash
-# Find container_name by using docker-compose ps
-$ docker exec [container_name] touch /etc/uwsgi/reload-uwsgi.ini
+    python3 [project-name]/manage.py test
 ```
